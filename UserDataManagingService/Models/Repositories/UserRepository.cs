@@ -6,18 +6,23 @@ namespace UserDataManagingService.Models.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        public User CreateUser(string newUserName, string newNickName, string password)
+        public User CreateUser(string newName, string newLastName, string newNickName, string password, string personalCode, string phoneNr, string email)
         {
             CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
-            var acc = new User
+            var createdAcc = new User
             {
-                Name = newUserName,
+                Name = newName,
+                LastName = newLastName,
                 NickName = newNickName,
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt,
+                PersonalCode = personalCode,
+                PhoneNr = phoneNr,
+                Email = email,
+
                 Role = Role.DefaultUser,
             };
-            return acc;
+            return createdAcc;
         }
         public void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
@@ -30,7 +35,7 @@ namespace UserDataManagingService.Models.Repositories
         {
             var userId = await _appDbContext.Users
                 .Where(a => a.NickName == nickName)
-                .Select(a => a.Id)
+                .Select(a => a.UserId)
                 .SingleOrDefaultAsync();
 
             return userId;

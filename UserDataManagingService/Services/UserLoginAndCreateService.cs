@@ -27,16 +27,16 @@ namespace UserDataManagingService.Services
             return computeHash.SequenceEqual(computeHash);
         }
 
-        public async Task<(bool, User)> SignupNewUser(string userName, string newNickName, string password) //2
+        public async Task<(bool, User)> SignupNewUser(string newName, string newLastName, string newNickName, string password, string personalCode, string phoneNr, string email) //2
         {
 
-            var nickNameExistAlready = await _userRepository.GetFullUserByNickname(userName);
+            var nickNameExistAlready = await _userRepository.GetFullUserByNickname(newName);
             if (nickNameExistAlready != null)
             {
                 return (false, null);
             }
 
-            var acc = _userRepository.CreateUser(userName, newNickName, password);
+            var acc = _userRepository.CreateUser(newName, newLastName, newNickName, password, personalCode, phoneNr, email);          
             _appDbContext.Users.Add(acc);
             await _appDbContext.SaveChangesAsync();
             return (true, acc);

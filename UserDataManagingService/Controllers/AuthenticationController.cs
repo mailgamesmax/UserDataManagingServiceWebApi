@@ -24,9 +24,9 @@ namespace UserDataManagingService.Controllers
         }
 
         [HttpPost(template: ("SignUpNewUser"))]
-        public async Task<IActionResult> SignUpNewClient([FromBody] SignUpNewUserRequest request)
+        public async Task<IActionResult> SignUpNewAcc([FromBody] SignUpNewUserRequest request)
         {
-            var newAcc = await _loginService.SignupNewUser(request.Username, request.NickName, request.Password);
+            var newAcc = await _loginService.SignupNewUser(request.Username, request.UserLastName, request.NickName, request.Password, request.PersonalCode, request.PhoneNr, request.Email);
             if (newAcc.Item1 == false)
             {
                 //return BadRequest("NickName is not availible");
@@ -49,37 +49,8 @@ namespace UserDataManagingService.Controllers
             return Ok(_jwtService.GetJwtToken(request.NickName, (Role)response.Role));
         }
         // GET: api/<AuthenticationController>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
 
-        // GET api/<AuthenticationController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/<AuthenticationController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT api/<AuthenticationController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<AuthenticationController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
-
+        //
         private readonly ILogger<AuthenticationController> _logger;
 
         private readonly IUserLoginAndCreateService _loginService;

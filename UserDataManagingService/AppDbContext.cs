@@ -9,6 +9,7 @@ namespace UserDataManagingService
     public class AppDbContext : DbContext
     {
         public DbSet<User> Users { get; set; }
+        public DbSet<LivingPlace> LivingPlaces { get; set; }
         
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
@@ -28,14 +29,14 @@ namespace UserDataManagingService
                 .HasConversion(
                     v => v.ToString(),
                     v => (Role)Enum.Parse(typeof(Role), v));
-/*
             modelBuilder
                 .Entity<User>()
-                .HasMany<NoteCategory>(u => u.UserNoteCategories)
+                .HasOne(u => u.LivingPlace)
                 .WithOne(c => c.User)
-                .HasForeignKey(k => k.UserId)
+                .HasForeignKey<LivingPlace>(u => u.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+/*
             // catTitle-catContent 1toM
             modelBuilder
                 .Entity<NoteCategory>()
