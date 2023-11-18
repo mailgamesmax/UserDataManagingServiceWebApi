@@ -25,9 +25,9 @@ namespace UserDataManagingService.Controllers
 
         [HttpPost(template: ("SignUpNewUser"))]
         public async Task<IActionResult> SignUpNewAcc([FromBody] SignUpNewUserRequest request)
-        {
+        {            
             var newAcc = await _loginService.SignupNewUser(request.Username, request.UserLastName, request.NickName, request.Password, request.PersonalCode, request.PhoneNr, request.Email);
-            if (newAcc.Item1 == false)
+            if (newAcc.Item1 == true)
             {
                 //return BadRequest("NickName is not availible");
                 return StatusCode(400, "requested NickName is not availible");
@@ -39,12 +39,13 @@ namespace UserDataManagingService.Controllers
         }
 
         [HttpPost(template: "UserLogin")]
-        public IActionResult UserLogin([FromBody] LoginRequest request)
+        public async Task<IActionResult> UserLogin([FromBody] LoginRequest request)
         {
-            var response = _loginService.UserLogin(request.NickName, request.Password);
+            var response = await _loginService.UserLogin(request.NickName, request.Password);
             if (!response.IsUserExist)
             {
-                return Unauthorized();
+                return NotFound("user nerastas arba blogas slaptazodis");
+                //return Unauthorized();
             }
             return Ok(_jwtService.GetJwtToken(request.NickName, (Role)response.Role));
         }

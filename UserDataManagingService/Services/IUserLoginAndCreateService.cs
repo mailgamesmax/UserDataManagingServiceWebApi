@@ -5,8 +5,10 @@ namespace UserDataManagingService.Services
 {
     public interface IUserLoginAndCreateService
     {
-        UserStatusDTO UserLogin(string newNickName, string password); //1
+        Task<UserStatusDTO> UserLogin(string inputedNickName, string password);
         Task<(bool, User)> SignupNewUser(string newName, string newLastName, string newNickName, string password, string personalCode, string phoneNr, string email); //2
+
+        //Task<(bool, User user)> UserNickNameExistAlready(string inputedNickName);
 //        User SignupNewUser(string userName, string newNickName, string password); //2
 
     }

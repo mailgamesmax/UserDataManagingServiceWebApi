@@ -60,7 +60,7 @@ namespace UserDataManagingService.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("LivingPlaces");
+                    b.ToTable("LivingPlaces", (string)null);
                 });
 
             modelBuilder.Entity("UserDataManagingService.Models.User", b =>
@@ -118,7 +118,7 @@ namespace UserDataManagingService.Migrations
                     b.HasIndex("NickName")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("UserDataManagingService.Models.LivingPlace", b =>

@@ -2,8 +2,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Data;
 using System.IO;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 using UserDataManagingService.Controllers.Requests;
 using UserDataManagingService.Models;
 using UserDataManagingService.Services;
@@ -16,33 +19,31 @@ namespace UserDataManagingService.Controllers
     public class EditLivingPlaceController : ControllerBase
     {
 
-        [HttpPost(template: ("EditLivingData"))]
-        public async Task<IActionResult> EditLivingData([FromBody] EditLivingDataRequest request)
+        [HttpPost(template: ("EditLivingPlaceForNickName"))]
+        public async Task<IActionResult> EditLivingData([FromBody] EditLivingDataForNickNameRequest request)
         {
-            var editedLivingPlace = await _placeService.EditLivingPlaceData(request.NickName, request.City, request.Street, request.BuildingNr, request.ApartmentNr);
-            /*       if (newAcc.Item1 == false)
-                   {
-                       //return BadRequest("NickName is not availible");
-                       return StatusCode(400, "requested NickName is not availible");
-                   }
-                   else
-                   {
-                       return Ok(newAcc.Item2);
-                   }*/
+
+            var editedLivingPlace = await _placeService.EditLivingPlaceDataByNickName(request.NickName, request.City, request.Street, request.BuildingNr, request.ApartmentNr);
+            _placeService.AutoCycleFixer_UserLivingPlace(editedLivingPlace);
             return Ok(editedLivingPlace);
         }
 
-        [HttpPost(template: "UserLogin")]
-        public IActionResult UserLogin([FromBody] LoginRequest request)
+        [HttpPost("editingFor_{userID}")]
+        public async Task<IActionResult> EditLivingDataByUserIdRouteProvided([FromBody] EditLivingDataRequest request, [FromRoute] string userID)
         {
-            var response = _loginService.UserLogin(request.NickName, request.Password);
-            if (!response.IsUserExist)
+            Guid guidUserId;
+            if (Guid.TryParse(userID, out guidUserId))
             {
-                return Unauthorized();
+                var editedLivingPlace = await _placeService.EditLivingPlaceDataByUserId(guidUserId, request.City, request.Street, request.BuildingNr, request.ApartmentNr);
+                _placeService.AutoCycleFixer_UserLivingPlace(editedLivingPlace);
+                return Ok(editedLivingPlace);                
             }
-            return Ok(_jwtService.GetJwtToken(request.NickName, (Role)response.Role));
+            else
+            {
+                return BadRequest("nesekmingas vartotojo ID apdorojimas - kreipkites i administratoriu"); 
+            }           
         }
-        // GET: api/<AuthenticationController>
+
 
         //
         private readonly ILogger<EditLivingPlaceController> _logger;

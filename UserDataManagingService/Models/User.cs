@@ -32,6 +32,8 @@ namespace UserDataManagingService.Models
 
         [ForeignKey("UserID")]
         public Guid LivingPlaceId { get; set; }
+        
+        [JsonIgnore]
         public LivingPlace LivingPlace{ get; set; }
         
         //[InverseProperty("User")]

@@ -4,11 +4,11 @@ namespace UserDataManagingService.Models.Repositories
 {
     public class LivingPlaceRepository : ILivingPlaceRepository
     {
-        public LivingPlace CreateLivingPlaceData(Guid userId, string city, string street, string buildingNr, string apartmentNr)
+        //public LivingPlace CreateLivingPlaceData(Guid userId, string city, string street, string buildingNr, string apartmentNr)
+        public LivingPlace CreateLivingPlaceData(string city, string street, string buildingNr, string apartmentNr)
         {
             var createdLivingPlace = new LivingPlace
             {
-                UserId = userId,
                 City = city,
                 Street = street,
                 BuildingNr = buildingNr,

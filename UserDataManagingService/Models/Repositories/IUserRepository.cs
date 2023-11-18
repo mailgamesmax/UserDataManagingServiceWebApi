@@ -2,6 +2,7 @@
 {
     public interface IUserRepository
     {
+        Task<(bool, User user)> UserNickNameExistAlready(string inputedNickName);
         User CreateUser(string newName, string newLastName, string newNickName, string password, string personalCode, string phoneNr, string email);
 
         //Task<User> UserById(Guid id);
