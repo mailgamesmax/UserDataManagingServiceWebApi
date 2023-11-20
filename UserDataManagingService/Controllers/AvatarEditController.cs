@@ -16,27 +16,27 @@ namespace UserDataManagingService.Controllers
 
     [Route("[controller]")]
     [ApiController]
-    public class EditLivingPlaceController : ControllerBase
+    public class AvatarEditController : ControllerBase
     {
 
-        [HttpPost(template: ("EditLivingPlaceForNickName"))]
+/*        [HttpPost(template: ("EditLivingPlaceForNickName"))]
         public async Task<IActionResult> EditLivingData([FromBody] EditLivingDataForNickNameRequest request)
         {
 
             var editedLivingPlace = await _placeService.EditLivingPlaceDataByNickName(request.NickName, request.City, request.Street, request.BuildingNr, request.ApartmentNr);
             _placeService.AutoCycleFixer_UserLivingPlace(editedLivingPlace);
             return Ok(editedLivingPlace);
-        }
+        }*/
 
-        [HttpPost("editingFor_{userID}")]
-        public async Task<IActionResult> EditLivingDataByUserIdRouteProvided([FromBody] EditLivingDataRequest request, [FromRoute] string userID)
+        [HttpPost("AvatarEditingFor_{userID}")]
+        public async Task<IActionResult> EditAvatarByUserIdRouteProvided([FromForm] ImageUploadRequest request, [FromRoute] string userID)
         {
             Guid guidUserId;
             if (Guid.TryParse(userID, out guidUserId))
             {
-                var editedLivingPlace = await _placeService.EditLivingPlaceDataByUserId(guidUserId, request.City, request.Street, request.BuildingNr, request.ApartmentNr);
-                _placeService.AutoCycleFixer_UserLivingPlace(editedLivingPlace);
-                return Ok(editedLivingPlace);                
+                var editedAvatar = await _avatarService.CreateOrUpdateAvatar(guidUserId, request.Image);
+                _avatarService.AutoCycleFixer_UserAvatar(editedAvatar);
+                return Ok(editedAvatar);                
             }
             else
             {
@@ -46,18 +46,19 @@ namespace UserDataManagingService.Controllers
 
 
         //
-        private readonly ILogger<EditLivingPlaceController> _logger;
+        private readonly ILogger<AvatarEditController> _logger;
 
-        private readonly IUserLoginAndCreateService _loginService;
+        //private readonly IUserLoginervice _loginService;
         private readonly IJWTService _jwtService;
         private readonly ILivingPlaceEditService _placeService;
+        private readonly IAvatarCRUDService _avatarService;
 
-        public EditLivingPlaceController(IUserLoginAndCreateService loginService, IJWTService jwtService, ILogger<EditLivingPlaceController> logger, ILivingPlaceEditService placeService)
+        public AvatarEditController(IJWTService jwtService, ILogger<AvatarEditController> logger, ILivingPlaceEditService placeService, IAvatarCRUDService avatarService)
         {
-            _loginService = loginService;
             _jwtService = jwtService;
             _logger = logger;
             _placeService = placeService;
+            _avatarService = avatarService;
         }
        
     }

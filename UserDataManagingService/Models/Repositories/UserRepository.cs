@@ -66,6 +66,15 @@ namespace UserDataManagingService.Models.Repositories
             }
         }
 
+        public async Task<User> AvatarIdMappingToUserId(Guid userId, Avatar avatar)
+        {
+            var targetUser = await _appDbContext.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+            targetUser.Avatar = avatar;
+            targetUser.AvatarId = avatar.Avatar_Id;
+            //await _appDbContext.SaveChangesAsync();
+            return targetUser;
+        }
+
         public async Task<(bool, User user)> UserNickNameExistAlready(string inputedNickName)
         {
             var anyUser = await _appDbContext.Users.SingleOrDefaultAsync(a => a.NickName == inputedNickName);

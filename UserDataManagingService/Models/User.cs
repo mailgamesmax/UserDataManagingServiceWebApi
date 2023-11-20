@@ -35,10 +35,11 @@ namespace UserDataManagingService.Models
         
         [JsonIgnore]
         public LivingPlace LivingPlace{ get; set; }
-        
-        //[InverseProperty("User")]
-        //[JsonIgnore]
-        //public ICollection<LivingPlace> UserLivingPlaces { get; set; } = new List<NoteCategory>();
+
+        public Guid AvatarId { get; set; }
+
+        [JsonIgnore]
+        public Avatar Avatar { get; set; }
 
     }
 

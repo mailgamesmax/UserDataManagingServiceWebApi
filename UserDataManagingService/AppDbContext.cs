@@ -10,7 +10,8 @@ namespace UserDataManagingService
     {
         public DbSet<User> Users { get; set; }
         public DbSet<LivingPlace> LivingPlaces { get; set; }
-        
+        public DbSet<Avatar> Avatars { get; set; }
+
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
 
@@ -29,6 +30,8 @@ namespace UserDataManagingService
                 .HasConversion(
                     v => v.ToString(),
                     v => (Role)Enum.Parse(typeof(Role), v));
+
+            // user-living place 1to1
             modelBuilder
                 .Entity<User>()
                 .HasOne(u => u.LivingPlace)
@@ -36,14 +39,13 @@ namespace UserDataManagingService
                 .HasForeignKey<LivingPlace>(u => u.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-/*
-            // catTitle-catContent 1toM
+            // user-avatar 1to1
             modelBuilder
-                .Entity<NoteCategory>()
-                .HasMany(u => u.NoteContents)
-                .WithOne(n => n.NoteCategory)
-                .HasForeignKey(k => k.Cat_Id);
-*/
+                .Entity<User>()
+                .HasOne(u => u.Avatar)
+                .WithOne(c => c.User)
+                .HasForeignKey<Avatar>(a => a.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
     }

@@ -28,9 +28,7 @@ namespace UserDataManagingService.Models
 
         [ForeignKey("UserID")]
         public Guid UserId { get; set; }
-        public User User { get; set; }
-
-        
+        public User User { get; set; }        
     }
 }
 

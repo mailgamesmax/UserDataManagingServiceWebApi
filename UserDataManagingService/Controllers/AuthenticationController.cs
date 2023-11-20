@@ -54,9 +54,9 @@ namespace UserDataManagingService.Controllers
         //
         private readonly ILogger<AuthenticationController> _logger;
 
-        private readonly IUserLoginAndCreateService _loginService;
+        private readonly IUserLoginService _loginService;
         private readonly IJWTService _jwtService;
-        public AuthenticationController(IUserLoginAndCreateService loginService, IJWTService jwtService, ILogger<AuthenticationController> logger)
+        public AuthenticationController(IUserLoginService loginService, IJWTService jwtService, ILogger<AuthenticationController> logger)
         {
             _loginService = loginService;
             _jwtService = jwtService;

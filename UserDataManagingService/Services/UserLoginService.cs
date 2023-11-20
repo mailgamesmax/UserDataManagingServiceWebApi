@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace UserDataManagingService.Services
 {
-    public class UserLoginAndCreateService : IUserLoginAndCreateService
+    public class UserLoginService : IUserLoginService
     {
         public async Task<UserStatusDTO> UserLogin(string inputedNickName, string password) //1
         {
@@ -45,12 +45,11 @@ namespace UserDataManagingService.Services
 
         }
 
-
         //
         private readonly AppDbContext _appDbContext;
         private readonly IUserRepository _userRepository;
 
-        public UserLoginAndCreateService(AppDbContext appDbContext, IUserRepository userRepository)
+        public UserLoginService(AppDbContext appDbContext, IUserRepository userRepository)
         {
             _appDbContext = appDbContext;
             _userRepository = userRepository;
