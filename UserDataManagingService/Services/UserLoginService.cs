@@ -16,6 +16,10 @@ namespace UserDataManagingService.Services
             {
                 return new UserStatusDTO(false);
             }            
+            if(existedUser.UserIsActive == false)
+            {
+                return new UserStatusDTO(false);
+            }
 
             var isUserExist = VerifyPasswordHash(password, existedUser.PasswordHash, existedUser.PasswordSalt);
             return new UserStatusDTO(isUserExist, existedUser.Role);
@@ -42,6 +46,25 @@ namespace UserDataManagingService.Services
             _appDbContext.Users.Add(acc);
             await _appDbContext.SaveChangesAsync();
             return (false, acc);
+
+        }
+
+        public async Task<(bool, string)> CompleteUserCreating(Guid userId)
+        {
+            var targetUser = await _userRepository.GetFullUserById(userId);
+            if (targetUser == null) 
+            {
+                return (false, "nerastas user pagal nurodyta id");
+            }
+            if(await _userRepository.UserDataAreNotNullOrWihteSpaceAndMapped(targetUser))
+            {
+                targetUser.UserIsActive = true;
+                _appDbContext.SaveChangesAsync();
+                return (true, "patikrinimas ok, vartotojas sukurtas ir issaugotas");
+            }
+            await _userRepository.DeleteUserAsync(userId);
+            return (false, "Klaida registruojant user registracijos duomenis. " +
+                "\nIšsaugoti duomenys ištrinti, vartotojas - nesukurtas");
 
         }
 

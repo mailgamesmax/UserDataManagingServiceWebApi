@@ -32,13 +32,6 @@ namespace UserDataManagingService.Models.Repositories
             passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
         }
 
-        public async Task<User> GetFullUserById(Guid userId)
-        {
-            var userById = await _appDbContext.Users.FirstOrDefaultAsync(x => x.UserId == userId);
-
-            return userById;
-        }
-
         public async Task<User> GetFullUserByNickname(string nickName)
         {
             var tryGetExistingUser = await UserNickNameExistAlready(nickName);
@@ -51,6 +44,26 @@ namespace UserDataManagingService.Models.Repositories
             {
                 return null;
             }
+        }
+
+        public async Task<User> GetFullUserById(Guid userId)
+        {
+            var targetUser = await _appDbContext.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+
+            if (targetUser != null)
+            {
+                return targetUser;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public async Task<bool> GetUserActiveStatusByUserId(Guid userId)
+        {
+            var targetUser = await _appDbContext.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+            return targetUser.UserIsActive;
         }
 
         public async Task<Guid> GetUserIdByNickname(string nickName)
@@ -89,13 +102,47 @@ namespace UserDataManagingService.Models.Repositories
             }
         }
 
+        public async Task<bool> DeleteUserAsync(Guid userId)
+        {
+            var targetUser = await _appDbContext.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+            if (targetUser != null)
+            {
+                _appDbContext.Users.Remove(targetUser);
+                await _appDbContext.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
 
+        public async Task<bool> UserDataAreNotNullOrWihteSpaceAndMapped(User user)
+        {
+            var livingPlace = await _livingPlaceRepository.GetLivingPlaceDataByUserID(user.UserId);
+            var avatar = await   _avatarRepository.GetAvatarByUserID(user.UserId);
+            return
+                !string.IsNullOrWhiteSpace(user.Name) &&
+                !string.IsNullOrWhiteSpace(user.NickName) &&
+                !string.IsNullOrWhiteSpace(user.LastName) &&
+                !string.IsNullOrWhiteSpace(user.PersonalCode) &&
+                !string.IsNullOrWhiteSpace(user.Email) &&
+                user.PasswordHash != null &&
+                user.PasswordSalt != null &&
+                !string.IsNullOrWhiteSpace(user.Role.ToString()) &&
+                user.LivingPlaceId == livingPlace.LivingPlace_Id &&
+                user.AvatarId == avatar.Avatar_Id;
+                
+                //!string.IsNullOrWhiteSpace(user.LivingPlaceId.ToString()) &&
+                //!string.IsNullOrWhiteSpace(user.AvatarId.ToString());
+        }
         //
         private readonly AppDbContext _appDbContext;
+        private readonly ILivingPlaceRepository _livingPlaceRepository;
+        private readonly IAvatarRepository _avatarRepository;
         //private readonly IUserLoginAndCreateService _userLoginAndCreateService;
-        public UserRepository(AppDbContext dbContext)
+        public UserRepository(AppDbContext dbContext, ILivingPlaceRepository livingPlaceRepository, IAvatarRepository avatarRepository)
         {
             _appDbContext = dbContext;
+            _livingPlaceRepository = livingPlaceRepository;
+            _avatarRepository = avatarRepository;
         }
 
     }

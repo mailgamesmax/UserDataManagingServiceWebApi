@@ -11,16 +11,20 @@ namespace UserDataManagingService.Models
 
         [Column("Miestas")]
         [MaxLength(250)]
+        [Required]
         public string City { get; set; }
+        [MaxLength(250)]
         [Required]
 
         [Column("Gatve")]
-        [MaxLength(250)]
         public string Street { get; set; } = string.Empty;
+        [MaxLength(250)]
+        [Required]
 
         [Column("Namo nr")]
         public string BuildingNr { get; set; } = string.Empty;
         [MaxLength(15)]
+        [Required]
 
         [Column("Buto nr")]
         public string ApartmentNr { get; set; } = string.Empty;

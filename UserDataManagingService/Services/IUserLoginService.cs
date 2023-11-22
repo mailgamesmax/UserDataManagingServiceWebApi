@@ -7,9 +7,10 @@ namespace UserDataManagingService.Services
     {
         Task<UserStatusDTO> UserLogin(string inputedNickName, string password);
         Task<(bool, User)> SignupNewUser(string newName, string newLastName, string newNickName, string password, string personalCode, string phoneNr, string email); //2
+        Task<(bool, string)> CompleteUserCreating(Guid userId);
 
         //Task<(bool, User user)> UserNickNameExistAlready(string inputedNickName);
-//        User SignupNewUser(string userName, string newNickName, string password); //2
+        //        User SignupNewUser(string userName, string newNickName, string password); //2
 
     }
 

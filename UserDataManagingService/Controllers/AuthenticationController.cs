@@ -38,6 +38,29 @@ namespace UserDataManagingService.Controllers
             }
         }
 
+        [HttpPost("FinalizingUserCreationFor_{userID}")]
+        public async Task<IActionResult> EditLivingDataByUserIdRouteProvided([FromRoute] string userID)
+        {
+            Guid guidUserId;
+            if (Guid.TryParse(userID, out guidUserId))
+            {
+                var isUserDataOk = await _loginService.CompleteUserCreating(guidUserId);
+                if (isUserDataOk.Item1 == true)
+                {
+                return Ok(isUserDataOk.Item2);
+                }
+                else
+                {
+                    return BadRequest(isUserDataOk.Item2);
+                }
+            }
+            else
+            {
+                return BadRequest("wrong user id threatment");
+            }
+
+        }
+
         [HttpPost(template: "UserLogin")]
         public async Task<IActionResult> UserLogin([FromBody] LoginRequest request)
         {
@@ -49,6 +72,7 @@ namespace UserDataManagingService.Controllers
             }
             return Ok(_jwtService.GetJwtToken(request.NickName, (Role)response.Role));
         }
+
         // GET: api/<AuthenticationController>
 
         //

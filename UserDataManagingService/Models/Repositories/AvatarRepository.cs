@@ -10,12 +10,12 @@ namespace UserDataManagingService.Models.Repositories
             return targetAvatar;
         }
 
-        public async Task<Avatar> ImageToBytesAndCreateAvatar(string title, IFormFile image) //? task
+        public async Task<Avatar> CreateAvatar(string title, byte[] imageInBytes) //? task
         {
-            using var memoryStream = new MemoryStream();
+          /*  using var memoryStream = new MemoryStream();
             await image.CopyToAsync(memoryStream);
 
-            var imageInBytes = memoryStream.ToArray();
+            var imageInBytes = memoryStream.ToArray();*/
 
             var createdAvatar = new Avatar(title, imageInBytes);
             return createdAvatar;        

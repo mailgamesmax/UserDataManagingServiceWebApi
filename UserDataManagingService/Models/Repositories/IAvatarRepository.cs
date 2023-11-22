@@ -2,7 +2,7 @@
 {
     public interface IAvatarRepository
     {
-        Task<Avatar> ImageToBytesAndCreateAvatar(string title, IFormFile image);
+        Task<Avatar> CreateAvatar(string title, byte[] imageInBytes);
         //Task<Avatar> UploadAndUpdateAvatar(string title, byte[] avatar);
 
         Avatar UpdateCurrentAvatar(Avatar oldAvatar, Avatar newAvatar);

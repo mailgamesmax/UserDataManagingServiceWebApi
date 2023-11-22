@@ -19,15 +19,6 @@ namespace UserDataManagingService.Controllers
     public class LivingPlaceEditController : ControllerBase
     {
 
-        [HttpPost(template: ("EditLivingPlaceForNickName"))]
-        public async Task<IActionResult> EditLivingData([FromBody] EditLivingDataForNickNameRequest request)
-        {
-
-            var editedLivingPlace = await _placeService.EditLivingPlaceDataByNickName(request.NickName, request.City, request.Street, request.BuildingNr, request.ApartmentNr);
-            _placeService.AutoCycleFixer_UserLivingPlace(editedLivingPlace);
-            return Ok(editedLivingPlace);
-        }
-
         [HttpPost("PlaceEditingFor_{userID}")]
         public async Task<IActionResult> EditLivingDataByUserIdRouteProvided([FromBody] EditLivingDataRequest request, [FromRoute] string userID)
         {
@@ -42,6 +33,15 @@ namespace UserDataManagingService.Controllers
             {
                 return BadRequest("nesekmingas vartotojo ID apdorojimas - kreipkites i administratoriu"); 
             }           
+        }
+
+        [HttpPost(template: ("EditLivingPlaceForNickName"))]
+        public async Task<IActionResult> EditLivingData([FromBody] EditLivingDataForNickNameRequest request)
+        {
+
+            var editedLivingPlace = await _placeService.EditLivingPlaceDataByNickName(request.NickName, request.City, request.Street, request.BuildingNr, request.ApartmentNr);
+            _placeService.AutoCycleFixer_UserLivingPlace(editedLivingPlace);
+            return Ok(editedLivingPlace);
         }
 
         //

@@ -19,15 +19,6 @@ namespace UserDataManagingService.Controllers
     public class AvatarEditController : ControllerBase
     {
 
-/*        [HttpPost(template: ("EditLivingPlaceForNickName"))]
-        public async Task<IActionResult> EditLivingData([FromBody] EditLivingDataForNickNameRequest request)
-        {
-
-            var editedLivingPlace = await _placeService.EditLivingPlaceDataByNickName(request.NickName, request.City, request.Street, request.BuildingNr, request.ApartmentNr);
-            _placeService.AutoCycleFixer_UserLivingPlace(editedLivingPlace);
-            return Ok(editedLivingPlace);
-        }*/
-
         [HttpPost("AvatarEditingFor_{userID}")]
         public async Task<IActionResult> EditAvatarByUserIdRouteProvided([FromForm] ImageUploadRequest request, [FromRoute] string userID)
         {
