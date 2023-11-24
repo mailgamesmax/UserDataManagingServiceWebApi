@@ -68,10 +68,20 @@ namespace UserDataManagingService.Services
 
         }
 
+        public Guid ConvertStringToGuid(string anyString)
+        {
+            Guid guidFromString;
+            if (Guid.TryParse(anyString, out guidFromString))
+            {
+                return guidFromString;
+            }
+            return Guid.Empty;
+        }
+
+
         //
         private readonly AppDbContext _appDbContext;
         private readonly IUserRepository _userRepository;
-
         public UserLoginService(AppDbContext appDbContext, IUserRepository userRepository)
         {
             _appDbContext = appDbContext;

@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-var connectionString = builder.Configuration.GetConnectionString("Database"); //duomenys sukurti appsettings.json
+    var connectionString = builder.Configuration.GetConnectionString("Database"); //duomenys sukurti appsettings.json
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options.UseSqlServer(connectionString); //dbcontext serviso registravimas
@@ -23,6 +23,8 @@ builder.Services.AddScoped<ILivingPlaceRepository, LivingPlaceRepository>();
 builder.Services.AddScoped<ILivingPlaceEditService, LivingPlaceEditService>();
 builder.Services.AddScoped<IAvatarRepository, AvatarRepository>();
 builder.Services.AddScoped<IAvatarCRUDService, AvatarCRUDService>();
+builder.Services.AddScoped<IPersonalInfoUpdateService, PersonalInfoUpdateService>();
+//builder.Services.AddScoped<ILivingPlaceUpdateService, LivingPlaceUpdateService>();
 
 
 builder.Services.AddScoped<IJWTService, JWTService>();
@@ -39,6 +41,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
     };
 });
+
 
 builder.Services.AddCors(); //apsaugos nuemimas
 

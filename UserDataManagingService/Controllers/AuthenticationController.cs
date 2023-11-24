@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using UserDataManagingService.Controllers.Requests;
 using UserDataManagingService.Models;
+using UserDataManagingService.Models.Repositories;
 using UserDataManagingService.Services;
 
 namespace UserDataManagingService.Controllers
@@ -39,26 +40,46 @@ namespace UserDataManagingService.Controllers
         }
 
         [HttpPost("FinalizingUserCreationFor_{userID}")]
-        public async Task<IActionResult> EditLivingDataByUserIdRouteProvided([FromRoute] string userID)
+        public async Task<IActionResult> ConfirmUserCreationaByUserIdRouteProvided([FromRoute] string userID)
         {
-            Guid guidUserId;
-            if (Guid.TryParse(userID, out guidUserId))
+            try
             {
-                var isUserDataOk = await _loginService.CompleteUserCreating(guidUserId);
-                if (isUserDataOk.Item1 == true)
+                _logger.LogInformation("read user id from route and convert to guid, check L.Place and Avatar for null");
+                var userGuidId = _loginService.ConvertStringToGuid(userID);
+                if (userGuidId == Guid.Empty)
                 {
-                return Ok(isUserDataOk.Item2);
+                    return StatusCode(400, "id converting fail");
+                }
+
+                if (await _livingPlaceRepository.GetLivingPlaceDataByUserID(userGuidId) == null)
+                {
+                    _logger.LogWarning("Living place of User is Null. This method can't be requested in such way");
+                    return StatusCode(400, "nera user living place");
+                }
+
+                if (await _avatarRepository.GetAvatarByUserID(userGuidId) == null)
+                {
+                    _logger.LogWarning("Avatar of User is Null. This method can't be requested in such way");
+                    return StatusCode(400, "nera user avatar");
+                }
+
+                _logger.LogInformation("checking user data and activation status");
+                var isUserDataOk = await _loginService.CompleteUserCreating(userGuidId);
+                var userChekingOkAndProfileIsActivated = isUserDataOk.Item1;
+                if (userChekingOkAndProfileIsActivated == true)
+                {
+                    return Ok(isUserDataOk.Item2); //action comments
                 }
                 else
                 {
                     return BadRequest(isUserDataOk.Item2);
                 }
             }
-            else
+            catch (Exception ex)
             {
-                return BadRequest("wrong user id threatment");
+                _logger.LogError($"An error occurred: {ex.Message}");
+                return StatusCode(500, "Internal server error");
             }
-
         }
 
         [HttpPost(template: "UserLogin")]
@@ -70,21 +91,27 @@ namespace UserDataManagingService.Controllers
                 return NotFound("user nerastas arba blogas slaptazodis");
                 //return Unauthorized();
             }
-            return Ok(_jwtService.GetJwtToken(request.NickName, (Role)response.Role));
+            var createdUserId = _userRepository.GetUserIdByNickname(request.NickName); //for app representation only
+            return Ok(new { Token = _jwtService.GetJwtToken(request.NickName, (Role)response.Role), UserId = createdUserId.Result });
         }
-
-        // GET: api/<AuthenticationController>
 
         //
         private readonly ILogger<AuthenticationController> _logger;
 
+        private readonly IUserRepository _userRepository;
         private readonly IUserLoginService _loginService;
         private readonly IJWTService _jwtService;
-        public AuthenticationController(IUserLoginService loginService, IJWTService jwtService, ILogger<AuthenticationController> logger)
+        private readonly ILivingPlaceRepository _livingPlaceRepository;
+        private readonly IAvatarRepository _avatarRepository;
+        public AuthenticationController(IUserRepository userRepository, IUserLoginService loginService, IJWTService jwtService, ILogger<AuthenticationController> logger, ILivingPlaceRepository livingPlaceRepository, IAvatarRepository avatarRepository)
         {
+            _userRepository = userRepository;
             _loginService = loginService;
             _jwtService = jwtService;
             _logger = logger;
+            _livingPlaceRepository = livingPlaceRepository;
+            _avatarRepository = avatarRepository;
+
         }
        
     }

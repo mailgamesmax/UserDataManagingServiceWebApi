@@ -25,11 +25,12 @@ namespace UserDataManagingService.Models.Repositories
             };
             return createdAcc;
         }
-        public void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+        public (byte[], byte[]) CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
             using var hmac = new HMACSHA512();
             passwordSalt = hmac.Key;
             passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+            return (passwordHash, passwordSalt);
         }
 
         public async Task<User> GetFullUserByNickname(string nickName)
@@ -54,10 +55,8 @@ namespace UserDataManagingService.Models.Repositories
             {
                 return targetUser;
             }
-            else
-            {
-                return null;
-            }
+            return null;
+
         }
 
         public async Task<bool> GetUserActiveStatusByUserId(Guid userId)
@@ -133,6 +132,17 @@ namespace UserDataManagingService.Models.Repositories
                 //!string.IsNullOrWhiteSpace(user.LivingPlaceId.ToString()) &&
                 //!string.IsNullOrWhiteSpace(user.AvatarId.ToString());
         }
+
+        public Guid ConvertStringToGuid(string anyString)
+        {
+            Guid guidFromString;
+            if (Guid.TryParse(anyString, out guidFromString))
+            {
+                return guidFromString;
+            }
+            return Guid.Empty;
+        }
+
         //
         private readonly AppDbContext _appDbContext;
         private readonly ILivingPlaceRepository _livingPlaceRepository;

@@ -38,17 +38,6 @@ namespace UserDataManagingService.Services
             }
         }
 
-/*        public async Task<byte[]> ConvertImageToBytes(IFormFile image) //? task
-        {
-            using var memoryStream = new MemoryStream();
-            await image.CopyToAsync(memoryStream);
-
-            var imageInBytes = memoryStream.ToArray();
-            
-            return imageInBytes;
-        }*/
-
-
         public async Task<byte[]> ResizeAndConvertImageToBytes(IFormFile primaryImage)
         {
             {
@@ -87,6 +76,16 @@ namespace UserDataManagingService.Services
                     }
                 }
             }
+        }
+
+        public Guid ConvertStringToGuid(string anyString)
+        {
+            Guid guidFromString;
+            if (Guid.TryParse(anyString, out guidFromString))
+            {
+                return guidFromString;
+            }
+            return Guid.Empty;
         }
 
         public void AutoCycleFixer_UserAvatar(Avatar targetObject)

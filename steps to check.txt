@@ -1,0 +1,14 @@
+tikrinimas
+1 sukurti user
+2 pabandyti aktyvuoti neuzpildzius place ir avatar
+3 prisijungti neaktyvavus (neturi veikti)
+4 sukurti avatar 
+5 atnaujinti avatar be tokeno (cia neturi atnaujinti)
+6 sukurti living place
+7 atnaujinti living place (neturi veikti)
+8 atnaujinti personal info (neturi veikti)
+9 finalizuoti/aktyvuoti user
+10 prisijungti - VEIKIA
+autorizuoti tokena
+11 atnaujinti avatar - VEIKIA
+12 atnaujinti living place - VEIKIA

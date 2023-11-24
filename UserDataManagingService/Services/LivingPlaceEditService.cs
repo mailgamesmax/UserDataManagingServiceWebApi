@@ -8,7 +8,7 @@ namespace UserDataManagingService.Services
 {
     public class LivingPlaceEditService : ILivingPlaceEditService
     {
-        public async Task<LivingPlace> EditLivingPlaceDataByNickName(string nickName, string city, string street, string buildingNr, string apartmentNr)
+        public async Task<LivingPlace> CreateLivingPlaceDataByNickName(string nickName, string city, string street, string buildingNr, string apartmentNr)
         {
          //   var selectUserId = await _userRepository.GetUserIdByNickname(nickName);
             var selectUserId = await _userRepository.GetUserIdByNickname(nickName);
@@ -17,11 +17,11 @@ namespace UserDataManagingService.Services
                 return null;
             }
             
-            var livingPlaceToEdit = await EditLivingPlaceDataByUserId(selectUserId, city, street, buildingNr, apartmentNr);
+            var livingPlaceToEdit = await CreateLivingPlaceDataByUserId(selectUserId, city, street, buildingNr, apartmentNr);
                 return livingPlaceToEdit;
         }
 
-        public async Task<LivingPlace> EditLivingPlaceDataByUserId(Guid selectUserId, string city, string street, string buildingNr, string apartmentNr)
+        public async Task<LivingPlace> CreateLivingPlaceDataByUserId(Guid selectUserId, string city, string street, string buildingNr, string apartmentNr)
         {
             var selectedUser = await _appDbContext.Users.FirstOrDefaultAsync(u => u.UserId == selectUserId);
             var livingPlaceToEdit = await _placeRepository.GetLivingPlaceDataByUserID(selectUserId);
@@ -42,6 +42,31 @@ namespace UserDataManagingService.Services
             return livingPlaceToEdit;
         }
 
+        public async Task<bool> LivingDataChange(Guid userId, string propertyTitl, string newValute)
+        {
+            var targetLivingPlace = await _placeRepository.GetLivingPlaceDataByUserID(userId);
+            if (targetLivingPlace == null)
+            {
+                return false;
+            }
+
+            var targetPropertie = targetLivingPlace.GetType().GetProperty(propertyTitl);
+
+            targetPropertie.SetValue(targetLivingPlace, newValute);
+            await _appDbContext.SaveChangesAsync();
+            return true;
+        }
+
+        public Guid ConvertStringToGuid(string anyString)
+        {
+            Guid guidFromString;
+            if (Guid.TryParse(anyString, out guidFromString))
+            {
+                return guidFromString;
+            }
+            return Guid.Empty;
+        }
+
         public void AutoCycleFixer_UserLivingPlace(LivingPlace targetObject)
         {
         var options = new JsonSerializerOptions
@@ -55,16 +80,12 @@ namespace UserDataManagingService.Services
         private readonly AppDbContext _appDbContext;
         private readonly IUserRepository _userRepository;
         private readonly ILivingPlaceRepository _placeRepository;
-        //private readonly IUserLoginAndCreateService _userLoginAndCreateService;
 
-
-        //public LivingPlaceEditService(AppDbContext appDbContext, IUserRepository userRepository, ILivingPlaceRepository livingPlaceRepository, IUserLoginAndCreateService userLoginAndCreateService)
         public LivingPlaceEditService(AppDbContext appDbContext, IUserRepository userRepository, ILivingPlaceRepository livingPlaceRepository)
         {
             _appDbContext = appDbContext;
             _userRepository = userRepository;
             _placeRepository = livingPlaceRepository;
-          //  _userLoginAndCreateService = userLoginAndCreateService;
         }
     }
 }

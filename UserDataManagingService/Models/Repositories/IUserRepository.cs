@@ -13,5 +13,7 @@
         Task<bool> DeleteUserAsync(Guid userId);
         Task<bool> UserDataAreNotNullOrWihteSpaceAndMapped(User user);
         Task<bool> GetUserActiveStatusByUserId(Guid userId);
+        Guid ConvertStringToGuid(string anyString);
+        (byte[], byte[]) CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt);
     }
 }
