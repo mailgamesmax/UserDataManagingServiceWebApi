@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using UserDataManagingService.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace UserDataManagingService.Models.Repositories
 {
@@ -76,6 +77,16 @@ namespace UserDataManagingService.Models.Repositories
             {
                 return Guid.Empty;
             }
+        }
+
+        public async Task<string> GetUserRoleById(Guid userId)
+        {
+            var targetUser = await GetFullUserById(userId);
+            if (targetUser == null)
+            {
+                return (string.Empty);
+            }            
+            return targetUser.Role.ToString();
         }
 
         public async Task<User> AvatarIdMappingToUserId(Guid userId, Avatar avatar)

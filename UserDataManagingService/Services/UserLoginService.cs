@@ -33,6 +33,13 @@ namespace UserDataManagingService.Services
             return computeHash.SequenceEqual(computeHash);
         }
 
+/*        public Token GenerateToken(string nick, Role role)
+        {
+            var token = _jwtService.GetJwtToken(request.NickName, (Role) response.Role)
+                return token;
+        }
+*/
+
         public async Task<(bool, User)> SignupNewUser(string newName, string newLastName, string newNickName, string password, string personalCode, string phoneNr, string email) //2
         {
 
@@ -46,7 +53,6 @@ namespace UserDataManagingService.Services
             _appDbContext.Users.Add(acc);
             await _appDbContext.SaveChangesAsync();
             return (false, acc);
-
         }
 
         public async Task<(bool, string)> CompleteUserCreating(Guid userId)
@@ -66,6 +72,19 @@ namespace UserDataManagingService.Services
             return (false, "Klaida registruojant user registracijos duomenis. " +
                 "\nIšsaugoti duomenys ištrinti, vartotojas - nesukurtas");
 
+        }
+
+        public async Task<bool> DeactivateUser(Guid userId)
+        {
+            var targetUser = await _userRepository.GetFullUserById(userId);
+            if (targetUser == null)
+            {
+                return (false);
+            }
+          
+            targetUser.UserIsActive = false;
+            _appDbContext.SaveChangesAsync();
+            return (true);
         }
 
         public Guid ConvertStringToGuid(string anyString)

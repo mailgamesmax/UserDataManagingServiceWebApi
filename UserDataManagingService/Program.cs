@@ -24,7 +24,8 @@ builder.Services.AddScoped<ILivingPlaceEditService, LivingPlaceEditService>();
 builder.Services.AddScoped<IAvatarRepository, AvatarRepository>();
 builder.Services.AddScoped<IAvatarCRUDService, AvatarCRUDService>();
 builder.Services.AddScoped<IPersonalInfoUpdateService, PersonalInfoUpdateService>();
-//builder.Services.AddScoped<ILivingPlaceUpdateService, LivingPlaceUpdateService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
+
 
 
 builder.Services.AddScoped<IJWTService, JWTService>();

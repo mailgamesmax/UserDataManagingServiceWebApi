@@ -12,3 +12,7 @@ tikrinimas
 autorizuoti tokena
 11 atnaujinti avatar - VEIKIA
 12 atnaujinti living place - VEIKIA
+
+13 su admin id bandyt istrinti kita user be autentifikacijos (neturi veikt)
+14 su user id trinti user autentifikavus (neturi veikt)
+15 admin trinti user autentifikavus - VEIKIA

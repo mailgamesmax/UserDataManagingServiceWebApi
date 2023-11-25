@@ -191,42 +191,33 @@ namespace UserDataManagingService.Controllers
             }
         }
 
-        /*        [HttpPost("FinalizingUserCreationFor_{userID}")]
-                public async Task<IActionResult> EditLivingDataByUserIdRouteProvided([FromRoute] string userID)
+        [HttpPost(template: ("deactivate_{userID}"))]
+        public async Task<IActionResult> DeactivateUser([FromRoute] string userID)
+        {
+            try
+            {
+                _logger.LogInformation("read user id from route and convert to guid");
+                var userGuidId = _userRepository.ConvertStringToGuid(userID);
+                if (userGuidId == Guid.Empty)
                 {
-                    Guid guidUserId;
-                    if (Guid.TryParse(userID, out guidUserId))
-                    {
-                        var isUserDataOk = await _loginService.CompleteUserCreating(guidUserId);
-                        if (isUserDataOk.Item1 == true)
-                        {
-                            return Ok(isUserDataOk.Item2);
-                        }
-                        else
-                        {
-                            return BadRequest(isUserDataOk.Item2);
-                        }
-                    }
-                    else
-                    {
-                        return BadRequest("wrong user id threatment");
-                    }
-
+                    return StatusCode(400, "id converting fail");
+                }
+                _logger.LogInformation("trying deactivate user - UserLoginService");
+                if (await _userRepository.DeleteUserAsync(userGuidId))
+                {
+                    _logger.LogInformation("deactivated successfully");
+                    return Ok("user deactyvuotas");
                 }
 
-                [HttpPost(template: "UserLogin")]
-                public async Task<IActionResult> UserLogin([FromBody] LoginRequest request)
-                {
-                    var response = await _loginService.UserLogin(request.NickName, request.Password);
-                    if (!response.IsUserExist)
-                    {
-                        return NotFound("user nerastas arba blogas slaptazodis");
-                        //return Unauthorized();
-                    }
-                    return Ok(_jwtService.GetJwtToken(request.NickName, (Role)response.Role));
-                }*/
-
-        // GET: api/<AuthenticationController>
+                _logger.LogError("user wasn't deactivated");
+                return StatusCode(400, "duomenu atnaujinti nepavyko");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"An error occurred: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
 
         //
         private readonly ILogger<PersonalInfoUpdteController> _logger;

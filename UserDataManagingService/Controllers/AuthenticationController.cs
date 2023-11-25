@@ -95,6 +95,52 @@ namespace UserDataManagingService.Controllers
             return Ok(new { Token = _jwtService.GetJwtToken(request.NickName, (Role)response.Role), UserId = createdUserId.Result });
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = nameof(Role.Admin))]
+        
+        //delete user for admin only
+        [HttpPost(template: ("delete_{adminID}"))]
+        public async Task<IActionResult> DeleteUser([FromRoute] string adminID, [FromBody] UserToRemoveRequest request)
+        {
+            try
+            {
+                _logger.LogInformation("read admin and user id from route and convert to guid");
+                var adminGuidId = _userRepository.ConvertStringToGuid(adminID);
+                var userGuidId = _userRepository.ConvertStringToGuid(request.UserId);
+                if (userGuidId == Guid.Empty || adminGuidId == Guid.Empty)
+                {
+                    return StatusCode(400, "id converting fail");
+                }
+                var checkAdminRole = await _userRepository.GetUserRoleById(adminGuidId);
+                if (checkAdminRole != "Admin")
+                {
+                    _logger.LogWarning("permission denied");
+                    return StatusCode(400, "neturite teises trinti useriu");
+                }
+
+                var userById = await _userRepository.GetFullUserById(userGuidId);
+                if(userById == null)
+                {
+                    _logger.LogInformation("user by uploaded id wasn't founded");
+                    return StatusCode(400, "nerastas user su tokiu id");
+                }
+
+                _logger.LogInformation("trying delete user - UserLoginService");
+                if (await _userRepository.DeleteUserAsync(userGuidId))
+                {
+                    _logger.LogInformation("User removed successfully");
+                    return Ok("user pašalintas");
+                }
+
+                _logger.LogError("user wasn't deleted");
+                return StatusCode(400, "duomenu atnaujinti nepavyko");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"An error occurred: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+        
         //
         private readonly ILogger<AuthenticationController> _logger;
 
