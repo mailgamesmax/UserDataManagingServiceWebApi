@@ -124,6 +124,19 @@ namespace UserDataManagingService.Models.Repositories
             return false;
         }
 
+        public async Task<bool> DeactivateUser(Guid userId)
+        {
+            var targetUser = await GetFullUserById(userId);
+            if (targetUser == null)
+            {
+                return (false);
+            }
+
+            targetUser.UserIsActive = false;
+            _appDbContext.SaveChangesAsync();
+            return (true);
+        }
+
         public async Task<bool> UserDataAreNotNullOrWihteSpaceAndMapped(User user)
         {
             var livingPlace = await _livingPlaceRepository.GetLivingPlaceDataByUserID(user.UserId);

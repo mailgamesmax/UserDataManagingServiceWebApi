@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using UserDataManagingService.Controllers.Requests;
 using UserDataManagingService.Controllers.Requests.PersonalInfoUpdateRequests;
 using UserDataManagingService.Models;
@@ -31,7 +32,14 @@ namespace UserDataManagingService.Controllers
                     return StatusCode(400, "id converting fail");                
                 }
                 _logger.LogInformation("request data changing from according service");
-                
+
+                var isUserAuthorisedCorrectly = await _jwtService.IsUserProvidedTokenOwner(userGuidId);
+                if (!isUserAuthorisedCorrectly)
+                {
+                    _logger.LogWarning("requested user doesn't match the data owner (jwt provided user)");
+                    return Unauthorized("thats not you!");
+                }
+
                 if (await _livingPlaceEditService.LivingDataChange(userGuidId, targetPropertie, request.ApartmentNr))
                 {
                     _logger.LogInformation("Data updated successfully");

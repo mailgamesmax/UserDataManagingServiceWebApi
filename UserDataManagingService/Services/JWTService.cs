@@ -2,6 +2,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using UserDataManagingService.Models;
+using UserDataManagingService.Models.Repositories;
 
 namespace UserDataManagingService.Services
 {
@@ -31,11 +32,23 @@ namespace UserDataManagingService.Services
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
+        public async Task<bool> IsUserProvidedTokenOwner(Guid userId)
+        {
+            var targetUser = await _userRepository.GetFullUserById(userId);
+
+            var currentNick = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
+            return targetUser?.NickName.Equals(currentNick) ?? false;
+        }
+
         //
         private readonly IConfiguration _configuration;
-        public JWTService(IConfiguration configuration)
+        private readonly IUserRepository _userRepository;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public JWTService(IConfiguration configuration, IUserRepository userRepository, IHttpContextAccessor httpContextAccessor)
         {
             _configuration = configuration;
+            _userRepository = userRepository;
+            _httpContextAccessor = httpContextAccessor;
         }
     }
 }

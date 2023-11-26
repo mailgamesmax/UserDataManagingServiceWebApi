@@ -12,6 +12,7 @@
         Task<User> GetFullUserByNickname(string nickName);
         Task<User> GetFullUserById(Guid userId);
         Task<bool> DeleteUserAsync(Guid userId);
+        Task<bool> DeactivateUser(Guid userId);
         Task<bool> UserDataAreNotNullOrWihteSpaceAndMapped(User user);
         Task<bool> GetUserActiveStatusByUserId(Guid userId);
         Task<string> GetUserRoleById(Guid userId);

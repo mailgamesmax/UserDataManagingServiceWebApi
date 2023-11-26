@@ -1,18 +1,24 @@
 tikrinimas
+! admin - jei NEAKTYVUS, logintis tik per "allinone"
+
 1 sukurti user
-2 pabandyti aktyvuoti neuzpildzius place ir avatar
+2 pabandyti aktyvuoti/finalizuoti neuzpildzius place ir avatar (neturi veikti)
 3 prisijungti neaktyvavus (neturi veikti)
 4 sukurti avatar 
-5 atnaujinti avatar be tokeno (cia neturi atnaujinti)
+5 atnaujinti avatar be tokeno (neturi atnaujinti, nes neaktyvus)
 6 sukurti living place
-7 atnaujinti living place (neturi veikti)
-8 atnaujinti personal info (neturi veikti)
-9 finalizuoti/aktyvuoti user
+7 atnaujinti living place (neturi atnaujinti, nes neaktyvus)
+8 atnaujinti personal info (neturi atnaujinti, nes neaktyvus)
+9 finalizuoti/aktyvuoti user - VEIKIA
 10 prisijungti - VEIKIA
+
 autorizuoti tokena
 11 atnaujinti avatar - VEIKIA
 12 atnaujinti living place - VEIKIA
+13 atnaujinti name (pvz) place - VEIKIA
 
-13 su admin id bandyt istrinti kita user be autentifikacijos (neturi veikt)
-14 su user id trinti user autentifikavus (neturi veikt)
-15 admin trinti user autentifikavus - VEIKIA
+14 su admin id bandyt istrinti kita user be autentifikacijos (neturi veikt)
+15 su user id trinti user autentifikavus (neturi veikt)
+16 admin autentifikavus trinti user - VEIKIA
+
+16 gavus vieno user tokena (kad ir admin) keisti kito user duomenis (neturi veikti)(isskyrus deaktyvavima per admin)

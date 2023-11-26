@@ -9,7 +9,7 @@ namespace UserDataManagingService.Services
         Task<(bool, User)> SignupNewUser(string newName, string newLastName, string newNickName, string password, string personalCode, string phoneNr, string email); //2
         Task<(bool, string)> CompleteUserCreating(Guid userId);
         Guid ConvertStringToGuid(string anyString);
-        Task<bool> DeactivateUser(Guid userId);
+        //Task<bool> DeactivateUser(Guid userId);
     }
 
 

@@ -74,19 +74,6 @@ namespace UserDataManagingService.Services
 
         }
 
-        public async Task<bool> DeactivateUser(Guid userId)
-        {
-            var targetUser = await _userRepository.GetFullUserById(userId);
-            if (targetUser == null)
-            {
-                return (false);
-            }
-          
-            targetUser.UserIsActive = false;
-            _appDbContext.SaveChangesAsync();
-            return (true);
-        }
-
         public Guid ConvertStringToGuid(string anyString)
         {
             Guid guidFromString;

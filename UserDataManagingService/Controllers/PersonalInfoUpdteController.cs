@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using UserDataManagingService.Controllers.Requests;
 using UserDataManagingService.Controllers.Requests.PersonalInfoUpdateRequests;
 using UserDataManagingService.Models;
@@ -29,6 +30,14 @@ namespace UserDataManagingService.Controllers
                 {
                     return StatusCode(400, "id converting fail");                
                 }
+
+                var isUserAuthorisedCorrectly = await _jwtService.IsUserProvidedTokenOwner(userGuidId);
+                if (!isUserAuthorisedCorrectly)
+                {
+                    _logger.LogWarning("requested user doesn't match the data owner (jwt provided user)");
+                    return Unauthorized("thats not you!");
+                }
+
                 _logger.LogInformation("request data changing from according service");
                 if (await _personalInfoUpdateService.NameChange(userGuidId, request.Name))
                 {
@@ -58,6 +67,14 @@ namespace UserDataManagingService.Controllers
                 {
                     return StatusCode(400, "id converting fail");
                 }
+
+                var isUserAuthorisedCorrectly = await _jwtService.IsUserProvidedTokenOwner(userGuidId);
+                if (!isUserAuthorisedCorrectly)
+                {
+                    _logger.LogWarning("requested user doesn't match the data owner (jwt provided user)");
+                    return Unauthorized("thats not you!");
+                }
+
                 _logger.LogInformation("request data changing from according service");
                 if (await _personalInfoUpdateService.EmailChange(userGuidId, request.Email))
                 {
@@ -87,6 +104,14 @@ namespace UserDataManagingService.Controllers
                 {
                     return StatusCode(400, "id converting fail");
                 }
+
+                var isUserAuthorisedCorrectly = await _jwtService.IsUserProvidedTokenOwner(userGuidId);
+                if (!isUserAuthorisedCorrectly)
+                {
+                    _logger.LogWarning("requested user doesn't match the data owner (jwt provided user)");
+                    return Unauthorized("thats not you!");
+                }
+
                 _logger.LogInformation("request data changing from according service");
                 if (await _personalInfoUpdateService.LastNameChange(userGuidId, request.LastName))
                 {
@@ -116,6 +141,14 @@ namespace UserDataManagingService.Controllers
                 {
                     return StatusCode(400, "id converting fail");
                 }
+
+                var isUserAuthorisedCorrectly = await _jwtService.IsUserProvidedTokenOwner(userGuidId);
+                if (!isUserAuthorisedCorrectly)
+                {
+                    _logger.LogWarning("requested user doesn't match the data owner (jwt provided user)");
+                    return Unauthorized("thats not you!");
+                }
+
                 _logger.LogInformation("request data changing from according service");
                 if (await _personalInfoUpdateService.PasswordChange(userGuidId, request.OldPassword, request.NewPassword))
                 {
@@ -145,6 +178,14 @@ namespace UserDataManagingService.Controllers
                 {
                     return StatusCode(400, "id converting fail");
                 }
+
+                var isUserAuthorisedCorrectly = await _jwtService.IsUserProvidedTokenOwner(userGuidId);
+                if (!isUserAuthorisedCorrectly)
+                {
+                    _logger.LogWarning("requested user doesn't match the data owner (jwt provided user)");
+                    return Unauthorized("thats not you!");
+                }
+
                 _logger.LogInformation("request data changing from according service");
                 if (await _personalInfoUpdateService.PersonalCodeChange(userGuidId, request.PersonalCode))
                 {
@@ -174,6 +215,14 @@ namespace UserDataManagingService.Controllers
                 {
                     return StatusCode(400, "id converting fail");
                 }
+
+                var isUserAuthorisedCorrectly = await _jwtService.IsUserProvidedTokenOwner(userGuidId);
+                if (!isUserAuthorisedCorrectly)
+                {
+                    _logger.LogWarning("requested user doesn't match the data owner (jwt provided user)");
+                    return Unauthorized("thats not you!");
+                }
+
                 _logger.LogInformation("request data changing from according service");
                 if (await _personalInfoUpdateService.PhoneNrChange(userGuidId, request.PhoneNr))
                 {
@@ -202,8 +251,18 @@ namespace UserDataManagingService.Controllers
                 {
                     return StatusCode(400, "id converting fail");
                 }
+
+                var targetUser = await _userRepository.GetFullUserById(userGuidId);
+                var currentNick = User.FindFirst(ClaimTypes.Name)?.Value;
+                var isUserAuthorisedCorrectly = (targetUser.NickName == currentNick || currentNick == "admin");               
+                if (!isUserAuthorisedCorrectly)
+                {
+                    _logger.LogWarning("requested user doesn't match the data owner (jwt provided user)");
+                    return Unauthorized("thats not you!");
+                }
+
                 _logger.LogInformation("trying deactivate user - UserLoginService");
-                if (await _userRepository.DeleteUserAsync(userGuidId))
+                if (await _userRepository.DeactivateUser(userGuidId))
                 {
                     _logger.LogInformation("deactivated successfully");
                     return Ok("user deactyvuotas");
@@ -218,6 +277,21 @@ namespace UserDataManagingService.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
+/*        //just another way to make extra authorization
+        public async Task<bool> IsUserProvidedTokenOwner(Guid userId)
+        {
+            var targetUser = await _userRepository.GetFullUserById(userId);
+            var currentNick = User.FindFirst(ClaimTypes.Name)?.Value;
+            return targetUser?.NickName.Equals(currentNick) ?? false;
+        }
+
+        public async Task<bool> IsUserProvidedTokenOwnerOrAdmin(Guid userId)
+        {
+            var targetUser = await _userRepository.GetFullUserById(userId);
+            var currentNick = User.FindFirst(ClaimTypes.Name)?.Value;
+            return (targetUser.NickName == currentNick || targetUser?.NickName == "admin");
+        }*/
 
         //
         private readonly ILogger<PersonalInfoUpdteController> _logger;

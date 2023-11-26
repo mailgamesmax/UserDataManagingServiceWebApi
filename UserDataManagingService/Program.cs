@@ -25,6 +25,10 @@ builder.Services.AddScoped<IAvatarRepository, AvatarRepository>();
 builder.Services.AddScoped<IAvatarCRUDService, AvatarCRUDService>();
 builder.Services.AddScoped<IPersonalInfoUpdateService, PersonalInfoUpdateService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
+//+
+builder.Services.AddHttpContextAccessor();
+
+
 
 
 
