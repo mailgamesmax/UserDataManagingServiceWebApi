@@ -74,6 +74,80 @@ namespace UserDataManagingService.Services
 
         }
 
+        public async Task<UserDTO> CreateUserDTO(User user)
+        {
+            var userDTO = CreateUserDTOPersonalInfo(user);
+
+            var userLivingPlace = await _livingPlaceRepository.GetLivingPlaceDataByUserID(user.UserId);
+            if (userLivingPlace == null)
+            {
+                userDTO.LivingPlace = null;
+            }
+            else
+            {
+               var userDTOLivingPlace = CreateUserDTOLivingPlace(userLivingPlace);
+               userDTO.LivingPlace = userDTOLivingPlace;
+            }
+
+            var userAvatar = await _avatarRepository.GetAvatarByUserID(user.UserId);
+            if (userAvatar == null)
+            {
+                userDTO.Avatar = null;
+            }
+            else
+            {
+                var avatarDTO = CreateUserDTOAvatar(userAvatar);
+                userDTO.Avatar = avatarDTO;
+            }
+
+            return userDTO;
+        }
+        public UserDTO CreateUserDTOPersonalInfo(User user)//, string nickName)//, string name, string lastName, string personalCode, string phoneNr, string email) 
+        {
+            var userDTO = new UserDTO
+            {
+                UserId = user.UserId,
+                NickName = user.NickName,
+                Name = user.Name,
+                LastName = user.LastName,
+                PersonalCode = user.PersonalCode,
+                PhoneNr = user.PhoneNr,
+                Email = user.Email,
+                UserIsActive = user.UserIsActive,
+                Role = user.Role
+            };
+
+            return userDTO;
+        }
+
+        public LivingPlace CreateUserDTOLivingPlace(LivingPlace livingPlace)
+        {
+            var placeDTO = new LivingPlace
+            {
+                City = livingPlace.City,
+                Street = livingPlace.Street,
+                BuildingNr = livingPlace.BuildingNr,
+                ApartmentNr = livingPlace.ApartmentNr,
+                LivingPlace_Id = livingPlace.LivingPlace_Id,
+                UserId = livingPlace.UserId
+            };            
+
+            return placeDTO;
+        }
+
+        public Avatar CreateUserDTOAvatar(Avatar avatar)
+        {
+            var avatarDTO = new Avatar
+            {
+                Avatar_Id = avatar.Avatar_Id,
+                AvatarBytes = avatar.AvatarBytes,
+                UserId = avatar.UserId,
+                Title = avatar.Title,
+            };
+
+            return avatarDTO;
+        }
+
         public Guid ConvertStringToGuid(string anyString)
         {
             Guid guidFromString;
@@ -88,10 +162,14 @@ namespace UserDataManagingService.Services
         //
         private readonly AppDbContext _appDbContext;
         private readonly IUserRepository _userRepository;
-        public UserLoginService(AppDbContext appDbContext, IUserRepository userRepository)
+        private readonly ILivingPlaceRepository _livingPlaceRepository;
+        private readonly IAvatarRepository _avatarRepository;
+        public UserLoginService(AppDbContext appDbContext, IUserRepository userRepository, ILivingPlaceRepository livingPlaceRepository, IAvatarRepository avatarRepository)
         {
             _appDbContext = appDbContext;
             _userRepository = userRepository;
+            _livingPlaceRepository = livingPlaceRepository;
+            _avatarRepository = avatarRepository;
         }
     }
 }

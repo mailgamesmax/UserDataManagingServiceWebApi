@@ -10,7 +10,7 @@ namespace UserDataManagingService.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AdminForAppRespresentation : ControllerBase
+    public class AdminForAppRespresentationController : ControllerBase
     {
         [HttpPost(template: ("AdminAllInOne"))]
         public async Task<IActionResult> AdminAllInOne()
@@ -28,7 +28,7 @@ namespace UserDataManagingService.Controllers
         private readonly IAdminService _adminService;
         private readonly IJWTService _jwtService;
 
-        public AdminForAppRespresentation(IAdminService adminService, IJWTService jwtService)
+        public AdminForAppRespresentationController(IAdminService adminService, IJWTService jwtService)
         {
             _adminService = adminService;
             _jwtService = jwtService;

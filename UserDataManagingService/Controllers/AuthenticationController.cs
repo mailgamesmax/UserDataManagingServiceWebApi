@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
+using System.Security.Claims;
 using UserDataManagingService.Controllers.Requests;
 using UserDataManagingService.Models;
 using UserDataManagingService.Models.Repositories;
@@ -26,16 +27,28 @@ namespace UserDataManagingService.Controllers
 
         [HttpPost(template: ("SignUpNewUser"))]
         public async Task<IActionResult> SignUpNewAcc([FromBody] SignUpNewUserRequest request)
-        {            
-            var newAcc = await _loginService.SignupNewUser(request.Username, request.UserLastName, request.NickName, request.Password, request.PersonalCode, request.PhoneNr, request.Email);
-            if (newAcc.Item1 == true)
+        {
+            try
             {
-                //return BadRequest("NickName is not availible");
-                return StatusCode(400, "requested NickName is not availible");
+                var newAcc = await _loginService.SignupNewUser(request.Username, request.UserLastName, request.NickName, request.Password, request.PersonalCode, request.PhoneNr, request.Email);
+                if (newAcc.Item1 == true) //requested user nickname exist already 
+                {
+                    //return BadRequest("NickName is not availible");
+                    //return ValidationProblem(detail: "nickname...", statusCode: 400);
+
+                    _logger.LogInformation("requested Nickname exist already");
+                    return StatusCode(400, "requested NickName is not availible");
+                }
+                else
+                {
+                    _logger.LogInformation("new user personal info recorded");
+                    return Ok(newAcc.Item2);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return Ok(newAcc.Item2);
+                _logger.LogError($"An error occurred: {ex.Message}");
+                return StatusCode(500, "Internal server error");
             }
         }
 
@@ -72,6 +85,7 @@ namespace UserDataManagingService.Controllers
                 }
                 else
                 {
+                    _logger.LogWarning("user data are not correct ir status isnt active");
                     return BadRequest(isUserDataOk.Item2);
                 }
             }
@@ -85,18 +99,57 @@ namespace UserDataManagingService.Controllers
         [HttpPost(template: "UserLogin")]
         public async Task<IActionResult> UserLogin([FromBody] LoginRequest request)
         {
-            var response = await _loginService.UserLogin(request.NickName, request.Password);
-            if (!response.IsUserExist)
+            try
             {
-                return NotFound("user nerastas arba blogas slaptazodis");
-                //return Unauthorized();
+                var response = await _loginService.UserLogin(request.NickName, request.Password);
+                if (!response.IsUserExist)
+                {
+                    return NotFound("user nerastas arba blogas slaptazodis");
+                    //return Unauthorized();
+                }
+                var createdUserId = _userRepository.GetUserIdByNickname(request.NickName); //for app representation only
+                return Ok(new { Token = _jwtService.GetJwtToken(request.NickName, (Role)response.Role), UserId = createdUserId.Result });
             }
-            var createdUserId = _userRepository.GetUserIdByNickname(request.NickName); //for app representation only
-            return Ok(new { Token = _jwtService.GetJwtToken(request.NickName, (Role)response.Role), UserId = createdUserId.Result });
+            catch (Exception ex)
+            {
+                _logger.LogError($"An error occurred: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
         }
 
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = nameof(Role.Admin))]
-        
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = (nameof(Role.DefaultUser) + "," + nameof(Role.Admin)))]
+        [HttpPost(template: "allDataFor_{userID}")]
+        public async Task<IActionResult> ShowAllUserData([FromRoute] string userID)
+        {
+            try
+            {
+                _logger.LogInformation("read user id from route and convert to guid");
+                var userGuidId = _userRepository.ConvertStringToGuid(userID);
+                if (userGuidId == Guid.Empty)
+                {
+                    return StatusCode(400, "id converting fail");
+                }
+                var targetUser = await _userRepository.GetFullUserById(userGuidId);
+                var currentNick = User.FindFirst(ClaimTypes.Name)?.Value;
+                var isUserAuthorisedCorrectly = (targetUser.NickName == currentNick || currentNick == "admin");
+                if (!isUserAuthorisedCorrectly)
+                {
+                    _logger.LogWarning("requested user doesn't match the data owner (jwt provided user)");
+                    return Unauthorized("thats not you!");
+                }
+
+                var userDTO = await _loginService.CreateUserDTO(targetUser);
+                return Ok(userDTO);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"An error occurred: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = nameof(Role.Admin))]        
         //delete user for admin only
         [HttpPost(template: ("delete_{adminID}"))]
         public async Task<IActionResult> DeleteUser([FromRoute] string adminID, [FromBody] UserToRemoveRequest request)
@@ -128,7 +181,7 @@ namespace UserDataManagingService.Controllers
                 if (await _userRepository.DeleteUserAsync(userGuidId))
                 {
                     _logger.LogInformation("User removed successfully");
-                    return Ok("user pašalintas");
+                    return Ok("user pasalintas");
                 }
 
                 _logger.LogError("user wasn't deleted");
@@ -149,7 +202,7 @@ namespace UserDataManagingService.Controllers
         private readonly IJWTService _jwtService;
         private readonly ILivingPlaceRepository _livingPlaceRepository;
         private readonly IAvatarRepository _avatarRepository;
-        public AuthenticationController(IUserRepository userRepository, IUserLoginService loginService, IJWTService jwtService, ILogger<AuthenticationController> logger, ILivingPlaceRepository livingPlaceRepository, IAvatarRepository avatarRepository)
+        public AuthenticationController(ILogger<AuthenticationController> logger, IUserRepository userRepository, IUserLoginService loginService, IJWTService jwtService, ILivingPlaceRepository livingPlaceRepository, IAvatarRepository avatarRepository)
         {
             _userRepository = userRepository;
             _loginService = loginService;

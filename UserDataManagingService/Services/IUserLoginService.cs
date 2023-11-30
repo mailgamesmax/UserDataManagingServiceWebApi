@@ -8,6 +8,7 @@ namespace UserDataManagingService.Services
         Task<UserStatusDTO> UserLogin(string inputedNickName, string password);
         Task<(bool, User)> SignupNewUser(string newName, string newLastName, string newNickName, string password, string personalCode, string phoneNr, string email); //2
         Task<(bool, string)> CompleteUserCreating(Guid userId);
+        Task<UserDTO> CreateUserDTO(User user);
         Guid ConvertStringToGuid(string anyString);
         //Task<bool> DeactivateUser(Guid userId);
     }
