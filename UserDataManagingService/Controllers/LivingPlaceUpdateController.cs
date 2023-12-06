@@ -18,7 +18,7 @@ namespace UserDataManagingService.Controllers
     public class LivingPlaceUpdateController : ControllerBase
     {
         //new apartment
-        [HttpPost(template: ("apartmentChangeFor_{userID}"))]
+        [HttpPut(template: ("apartmentChangeFor_{userID}"))]
         public async Task<IActionResult> ApartmentChange([FromBody] ApartmentChangingRequest request, [FromRoute] string userID)
         {
             var targetPropertie = nameof(LivingPlace.ApartmentNr);
@@ -57,7 +57,7 @@ namespace UserDataManagingService.Controllers
         }
 
         //new building
-        [HttpPost(template: ("buildingChangeFor_{userID}"))]
+        [HttpPut(template: ("buildingChangeFor_{userID}"))]
         public async Task<IActionResult> BuildingChange([FromBody] BuildingChangingRequest request, [FromRoute] string userID)
         {
             var targetPropertie = nameof(LivingPlace.BuildingNr);
@@ -89,7 +89,7 @@ namespace UserDataManagingService.Controllers
         }
 
         //new city
-        [HttpPost(template: ("CityChangeFor_{userID}"))]
+        [HttpPut(template: ("CityChangeFor_{userID}"))]
         public async Task<IActionResult> CityChange([FromBody] CityChangingRequest request, [FromRoute] string userID)
         {
             var targetPropertie = nameof(LivingPlace.City);
@@ -120,8 +120,8 @@ namespace UserDataManagingService.Controllers
             }
         }
 
-        //new apartment
-        [HttpPost(template: ("streetChangeFor_{userID}"))]
+        //new street
+        [HttpPut(template: ("streetChangeFor_{userID}"))]
         public async Task<IActionResult> StreetChange([FromBody] StreetChangingRequest request, [FromRoute] string userID)
         {
             var targetPropertie = nameof(LivingPlace.Street);
@@ -160,7 +160,6 @@ namespace UserDataManagingService.Controllers
         private readonly IJWTService _jwtService;
         public LivingPlaceUpdateController(ILivingPlaceEditService livingPlaceEditService, IUserRepository userRepository, IJWTService jwtService, ILogger<LivingPlaceUpdateController> logger)
         {
-            //_personalInfoUpdateService = personalInfoUpdateService;
             _userRepository = userRepository;
             _jwtService = jwtService;
             _logger = logger;

@@ -14,7 +14,7 @@ namespace UserDataManagingService.Controllers
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = (nameof(Role.DefaultUser) + "," + nameof(Role.Admin)))]
     public class AvatarUpdateController : ControllerBase
     {
-        [HttpPost("avatarUpdateFor_{userID}")]
+        [HttpPut("avatarUpdateFor_{userID}")]
         public async Task<IActionResult> UpdateAvatarByUserIdRouteProvided([FromForm] ImageUploadRequest request, [FromRoute] string userID)
         {
             try

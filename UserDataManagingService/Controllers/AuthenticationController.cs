@@ -33,9 +33,6 @@ namespace UserDataManagingService.Controllers
                 var newAcc = await _loginService.SignupNewUser(request.Username, request.UserLastName, request.NickName, request.Password, request.PersonalCode, request.PhoneNr, request.Email);
                 if (newAcc.Item1 == true) //requested user nickname exist already 
                 {
-                    //return BadRequest("NickName is not availible");
-                    //return ValidationProblem(detail: "nickname...", statusCode: 400);
-
                     _logger.LogInformation("requested Nickname exist already");
                     return StatusCode(400, "requested NickName is not availible");
                 }
@@ -107,8 +104,8 @@ namespace UserDataManagingService.Controllers
                     return NotFound("user nerastas arba blogas slaptazodis");
                     //return Unauthorized();
                 }
-                var createdUserId = _userRepository.GetUserIdByNickname(request.NickName); //for app representation only
-                return Ok(new { Token = _jwtService.GetJwtToken(request.NickName, (Role)response.Role), UserId = createdUserId.Result });
+                var userId = _userRepository.GetUserIdByNickname(request.NickName); 
+                return Ok(new { Token = _jwtService.GetJwtToken(request.NickName, (Role)response.Role), UserId = userId.Result });
             }
             catch (Exception ex)
             {
@@ -118,7 +115,7 @@ namespace UserDataManagingService.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = (nameof(Role.DefaultUser) + "," + nameof(Role.Admin)))]
-        [HttpPost(template: "allDataFor_{userID}")]
+        [HttpGet(template: "allDataFor_{userID}")]
         public async Task<IActionResult> ShowAllUserData([FromRoute] string userID)
         {
             try

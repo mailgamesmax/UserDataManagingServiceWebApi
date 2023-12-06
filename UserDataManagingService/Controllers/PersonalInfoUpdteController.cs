@@ -19,7 +19,7 @@ namespace UserDataManagingService.Controllers
     {
 
         //new name
-        [HttpPost(template: ("NameChangeFor_{userID}"))]
+        [HttpPut(template: ("NameChangeFor_{userID}"))]
         public async Task<IActionResult> NameChange([FromBody] NameChangingRequest request, [FromRoute] string userID)
         {
             try
@@ -56,7 +56,7 @@ namespace UserDataManagingService.Controllers
         }
 
         //new email
-        [HttpPost(template: ("EmailChangeFor_{userID}"))]
+        [HttpPut(template: ("EmailChangeFor_{userID}"))]
         public async Task<IActionResult> EmailChange([FromBody] EmailChangingRequest request, [FromRoute] string userID)
         {
             try
@@ -93,7 +93,7 @@ namespace UserDataManagingService.Controllers
         }
 
         //new LastName
-        [HttpPost(template: ("LastNameChangeFor_{userID}"))]
+        [HttpPut(template: ("LastNameChangeFor_{userID}"))]
         public async Task<IActionResult> LastNameChange([FromBody] LastNameChangingRequest request, [FromRoute] string userID)
         {
             try
@@ -130,7 +130,7 @@ namespace UserDataManagingService.Controllers
         }
 
         //new password
-        [HttpPost(template: ("passwordChangeFor_{userID}"))]
+        [HttpPut(template: ("passwordChangeFor_{userID}"))]
         public async Task<IActionResult> PasswordChange([FromBody] PasswordChangingRequest request, [FromRoute] string userID)
         {
             try
@@ -167,7 +167,7 @@ namespace UserDataManagingService.Controllers
         }
 
         //new Personal code
-        [HttpPost(template: ("personalCodeChangeFor_{userID}"))]
+        [HttpPut(template: ("personalCodeChangeFor_{userID}"))]
         public async Task<IActionResult> PersonalCodeChange([FromBody] PersonalCodeChangingRequest request, [FromRoute] string userID)
         {
             try
@@ -204,7 +204,7 @@ namespace UserDataManagingService.Controllers
         }
 
         //new Phone nr
-        [HttpPost(template: ("phoneNrChangeFor_{userID}"))]
+        [HttpPut(template: ("phoneNrChangeFor_{userID}"))]
         public async Task<IActionResult> PhoneNrChange([FromBody] PhoneNrChangingRequest request, [FromRoute] string userID)
         {
             try
@@ -240,7 +240,7 @@ namespace UserDataManagingService.Controllers
             }
         }
 
-        [HttpPost(template: ("deactivate_{userID}"))]
+        [HttpPut(template: ("deactivate_{userID}"))]
         public async Task<IActionResult> DeactivateUser([FromRoute] string userID)
         {
             try

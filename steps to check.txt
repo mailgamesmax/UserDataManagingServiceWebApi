@@ -15,7 +15,7 @@ tikrinimas
 autorizuoti tokena
 11 atnaujinti avatar - VEIKIA
 12 atnaujinti living place - VEIKIA
-13 atnaujinti name (pvz) place - VEIKIA
+13 atnaujinti name (pvz) - VEIKIA
 
 14 su admin id bandyt istrinti kita user be autentifikacijos (neturi veikt)
 15 su user id trinti user autentifikavus (neturi veikt)

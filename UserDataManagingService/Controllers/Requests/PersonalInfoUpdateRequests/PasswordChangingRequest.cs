@@ -6,6 +6,7 @@ namespace UserDataManagingService.Controllers.Requests.PersonalInfoUpdateRequest
     {
         [NotNullOrWhiteSpace]
         public string OldPassword { get; set; }
+        [NotNullOrWhiteSpace]
         public string NewPassword { get; set; }
     }
 }
